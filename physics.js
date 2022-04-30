@@ -1,9 +1,10 @@
 import Matter from 'matter-js';
-import {getPipeSizePosPair} from './utils/random';
+import {getStoneSizePos} from './utils/random';
 
 import {Dimensions} from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
+const exceptionLabels = ['Floor', 'Ceil'];
 
 const physics = (entities, {touches, time, dispatch}) => {
   let engine = entities.physics.engine;
@@ -19,37 +20,19 @@ const physics = (entities, {touches, time, dispatch}) => {
 
   Matter.Engine.update(engine, time.delta);
 
-  for (let i = 1; i < 3; i++) {
-    if (
-      entities[`ObstacleTop${i}`].body.bounds.max.x <= 50 &&
-      !entities[`ObstacleTop${i}`].point
-    ) {
-      entities[`ObstacleTop${i}`].point = true;
+  for (let i = 1; i < 4; i++) {
+    if (entities[`ObstacleBottom${i}`].body.bounds.max.x <= 0) {
+      const stone = getStoneSizePos(windowWidth * 1.05);
+
+      Matter.Body.setPosition(entities[`ObstacleBottom${i}`].body, stone.pos);
       dispatch({type: 'new_point'});
     }
 
-    if (entities[`ObstacleTop${i}`].body.bounds.max.x <= 0) {
-      const pipeSizePos = getPipeSizePosPair(windowWidth * 0.9);
-
-      Matter.Body.setPosition(
-        entities[`ObstacleTop${i}`].body,
-        pipeSizePos.pipeTop.pos,
-      );
-      Matter.Body.setPosition(
-        entities[`ObstacleBottom${i}`].body,
-        pipeSizePos.pipeBottom.pos,
-      );
-    }
-
-    Matter.Body.translate(entities[`ObstacleTop${i}`].body, {
-      x: -3,
-      y: 0,
-    });
     Matter.Body.translate(entities[`ObstacleBottom${i}`].body, {x: -3, y: 0});
   }
 
   Matter.Events.on(engine, 'collisionStart', event => {
-    if (event.pairs[0].bodyB.label !== 'Floor') {
+    if (!exceptionLabels.includes(event.pairs[0].bodyB.label)) {
       dispatch({type: 'game_over'});
     }
   });

@@ -10,10 +10,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "babel-plugin-inline-import": "^3.0.0",
     "matter-js": "^0.18.0",
+    "poly-decomp": "^0.3.0",
     "react": "17.0.2",
     "react-native": "0.68.1",
-    "react-native-game-engine": "^1.2.0"
+    "react-native-game-engine": "^1.2.0",
+    "react-native-sound-level": "^1.1.5",
+    "react-native-svg": "^12.3.0",
+    "react-native-svg-transformer": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
