@@ -18,7 +18,6 @@ const Decibel = () => {
   };
 
   useEffect(() => {
-    // RNSoundLevel.start();
     return () => {
       RNSoundLevel.stop();
     };
