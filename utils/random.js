@@ -5,6 +5,8 @@ const windowHeight = Dimensions.get('window').height;
 
 export const getStoneSizePos = (addToPosX = 0) => {
   const yPosTop = -Math.floor(Math.random() * 500 + 200);
+  let width = 157;
+  let height = 80;
 
   const stone = {
     pos: {
@@ -12,8 +14,8 @@ export const getStoneSizePos = (addToPosX = 0) => {
       y: windowHeight + yPosTop,
     },
     size: {
-      width: 120,
-      height: 120,
+      width,
+      height,
     },
   };
 
