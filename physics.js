@@ -1,41 +1,49 @@
+import {Dimensions} from 'react-native';
+
 import Matter from 'matter-js';
 import {getStoneSizePos} from './utils/random';
-
-import {Dimensions} from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const exceptionLabels = ['Floor', 'Ceil'];
 
-const physics = (entities, {touches, time, dispatch}) => {
-  let engine = entities.physics.engine;
+const physics = (entities, {events, time, dispatch}) => {
+  const engine = entities.physics.engine;
 
-  touches
-    .filter(t => t.type === 'press')
-    .forEach(t => {
-      Matter.Body.setVelocity(entities.Bird.body, {
+  events.forEach(({type, payload}) => {
+    if (type !== 'decibel') {
+      return;
+    }
+
+    const {volume} = payload;
+
+    if (volume > -10) {
+      const yVelocityValue = -(Math.ceil(volume) + 10);
+
+      Matter.Body.setVelocity(entities.Submarine.body, {
         x: 0,
-        y: -8,
+        y: yVelocityValue,
       });
-    });
+    }
+  });
 
   Matter.Engine.update(engine, time.delta);
 
   for (let i = 1; i < 4; i++) {
-    if (entities[`ObstacleBottom${i}`].body.bounds.max.x <= 0) {
+    if (entities[`Obstacle${i}`].body.bounds.max.x <= 0) {
       const stone = getStoneSizePos(windowWidth * 1.05);
 
-      Matter.Body.setPosition(entities[`ObstacleBottom${i}`].body, stone.pos);
-      dispatch({type: 'new_point'});
+      Matter.Body.setPosition(entities[`Obstacle${i}`].body, stone.pos);
+      dispatch({type: 'newPoint'});
     }
 
-    Matter.Body.translate(entities[`ObstacleBottom${i}`].body, {x: -3, y: 0});
+    Matter.Body.translate(entities[`Obstacle${i}`].body, {x: -3, y: 0});
+
+    Matter.Events.on(engine, 'collisionStart', event => {
+      if (!exceptionLabels.includes(event.pairs[0].bodyB.label)) {
+        dispatch({type: 'gameOver'});
+      }
+    });
   }
-
-  Matter.Events.on(engine, 'collisionStart', event => {
-    if (!exceptionLabels.includes(event.pairs[0].bodyB.label)) {
-      dispatch({type: 'game_over'});
-    }
-  });
 
   return entities;
 };

@@ -1,16 +1,20 @@
+import {Dimensions} from 'react-native';
 import Matter from 'matter-js';
-import Bird from '../components/Bird';
+import decomp from 'poly-decomp';
+
+import Submarine from '../components/Submarine';
 import Floor from '../components/Floor';
 import Obstacle from '../components/Obstacle';
 import Ceil from '../components/Ceil';
 
-import {Dimensions} from 'react-native';
+import svg from '../utils/xml';
 import {getStoneSizePos} from '../utils/random';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default () => {
+export default (() => {
+  Matter.Common.setDecomp(decomp);
   const engine = Matter.Engine.create({enableSleeping: false});
   const world = engine.world;
 
@@ -22,31 +26,39 @@ export default () => {
 
   return {
     physics: {engine, world},
-    Bird: Bird(world, 'green', {x: 50, y: 300}, {height: 70, width: 70}),
-    ObstacleBottom1: Obstacle(
+    Submarine: Submarine(
       world,
-      'ObstacleBottom1',
-      'blue',
+      'green',
+      {x: 50, y: 300},
+      {height: 60, width: 60},
+    ),
+    Obstacle1: Obstacle(
+      world,
+      'Obstacle1',
+      'red',
       stoneA.pos,
       stoneA.size,
+      svg,
     ),
-    ObstacleBottom2: Obstacle(
+    Obstacle2: Obstacle(
       world,
-      'ObstacleBottom2',
-      'blue',
+      'Obstacle2',
+      'green',
       stoneB.pos,
       stoneB.size,
+      svg,
     ),
-    ObstacleBottom3: Obstacle(
+    Obstacle3: Obstacle(
       world,
-      'ObstacleBottom3',
-      'blue',
+      'Obstacle3',
+      'purple',
       stoneC.pos,
       stoneC.size,
+      svg,
     ),
     Ceil: Ceil(
       world,
-      'yellow',
+      'orange',
       {x: windowWidth / 2, y: 0},
       {height: 100, width: windowWidth},
     ),
@@ -57,4 +69,4 @@ export default () => {
       {height: 300, width: windowWidth},
     ),
   };
-};
+})();
